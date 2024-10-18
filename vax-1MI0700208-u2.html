@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+			}
+		  }
+		</script>
+	</head>
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+
+            //////////////////////////////////////////////////////////////////////////////////
+            //NEEDED STUFF
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            renderer.setAnimationLoop(frame);
+
+			document.body.appendChild(renderer.domElement);
+			document.body.style.margin = 0;
+			document.body.style.overflow = 'hidden';
+
+            var scene = new THREE.Scene();
+			scene.background = new THREE.Color('white');
+
+			var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
+			camera.position.set(0, 0, 10);
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var light = new THREE.PointLight('white', 5000);
+			light.position.set(0, 20, 40);
+
+			scene.add(light);
+
+            //////////////////////////////////////////////////////////////////////////////////
+            var wholeFigure = new THREE.Group();
+            var group = new THREE.Group();
+			
+            //Upper and lower cube
+			var material = new THREE.MeshLambertMaterial();
+			
+            var geometryUpperCube = new THREE.BoxGeometry(3, 4.5, 0.5);
+            var upperCube = new THREE.Mesh(geometryUpperCube, material);
+            upperCube.position.set(2.25,0,-0.25);
+
+            var geometryLowerCube = new THREE.BoxGeometry(1, 4.5, 0.5);
+			var lowerCuber = new THREE.Mesh(geometryLowerCube, material);
+            lowerCuber.position.set(-1.25,0,-0.25);
+			
+            group.add(upperCube);
+            group.add(lowerCuber);
+            group.rotation.set(0,0,Math.PI/ 2);
+            group.position.set(1.5,0,0);
+            
+            //Right and left cube
+            var geometryRightCube = new THREE.BoxGeometry(3, 3.5, 0.5);
+            var rightCube = new THREE.Mesh(geometryRightCube, material);
+            rightCube.position.set(2.25,0,-0.25);
+
+            var geometryLeftCube = new THREE.BoxGeometry(1, 5.5, 0.5);
+            var leftCube = new THREE.Mesh(geometryLeftCube, material);
+            leftCube.position.set(-1.25,1,-0.25);
+
+            //CylinderHole
+            var cylMat = new THREE.MeshLambertMaterial();
+            var cylinder = new THREE.Mesh( new THREE.CylinderGeometry( 0.5, 0.5, 0.5, 32, 20, true), cylMat );          
+            cylinder.position.set(0,0,-0.25);
+            cylinder.rotation.set(Math.PI/2,0,0);
+            cylinder.material.side = THREE.BackSide;
+            
+            //Front and back ring
+            var frontRing = new THREE.Mesh(
+					new THREE.RingGeometry(0.5, 1.2, 32),
+					material);
+           
+            var backRingMat = new THREE.MeshLambertMaterial();
+            var backRing = new THREE.Mesh(
+					new THREE.RingGeometry(0.5, 1.2, 32),
+					backRingMat );
+			backRing.position.set(0, 0, -0.5);
+            backRing.material.side = THREE.BackSide;
+
+            wholeFigure.add(group, frontRing, backRing, rightCube, leftCube, cylinder);
+            scene.add(wholeFigure);
+            //////////////////////////////////////////////////////////////////////////////////
+
+            function frame(time) {
+                var t = time / 1000;
+
+                wholeFigure.rotation.set(0,t,0); 
+
+                renderer.render(scene, camera);
+            }       
+		</script>
+	</body>
+</html>
