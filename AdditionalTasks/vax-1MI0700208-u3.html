@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>E0203: Библиотека vax.js</title>
+    <meta charset="utf-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+          "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <script type="module">
+      import * as THREE from "three";
+      import * as VAX from "vax";
+
+      //VAX.camera.position.set(0,0, -100);
+      VAX.init(animate);
+
+      //////////////////////////////////////////////////////////////////////////////////
+      //Variables to reshape the figure
+      var sizeTetrahed = 10;
+      var sizeOutLine = 5;
+
+      //////////////////////////////////////////////////////////////////////////////////
+      //Objects and materials that's needed
+      var material = new THREE.MeshLambertMaterial({ color: "orange" });
+      var material5 = new THREE.MeshLambertMaterial({ color: "black" });
+
+      //it's multiplied by Math.sqrt(3) because of the resizing of Tetrahed
+      var tetrahedGeom = new THREE.TetrahedronGeometry(sizeTetrahed * Math.sqrt(3));
+
+      //it's multiplied by 2* Math.sqrt(2) to fit the side of the Tetrahed; +sizeSphere+5 to intersect with the sphere
+      var geometryCyl = new THREE.CylinderGeometry(sizeOutLine,sizeOutLine,2 * sizeTetrahed * Math.sqrt(2) + (3 / 2) * sizeOutLine,32);
+      var sphereGeom = new THREE.SphereGeometry(sizeOutLine, 16, 16);
+
+      var tetrahed = new THREE.Mesh(tetrahedGeom, material);
+      var tetrahed2 = new THREE.Mesh(tetrahedGeom, material);
+      var tetrahed3 = new THREE.Mesh(tetrahedGeom, material);
+      var tetrahed4 = new THREE.Mesh(tetrahedGeom, material);
+
+      var sphere1 = new THREE.Mesh(sphereGeom, material5);
+      var sphere2 = new THREE.Mesh(sphereGeom, material5);
+      var sphere3 = new THREE.Mesh(sphereGeom, material5);
+      var sphere4 = new THREE.Mesh(sphereGeom, material5);
+
+      var cylinder = new THREE.Mesh(geometryCyl, material5);
+      var cylinder2 = new THREE.Mesh(geometryCyl, material5);
+      var cylinder3 = new THREE.Mesh(geometryCyl, material5);
+      var cylinder4 = new THREE.Mesh(geometryCyl, material5);
+      var cylinder5 = new THREE.Mesh(geometryCyl, material5);
+      var cylinder6 = new THREE.Mesh(geometryCyl, material5);
+
+      var group = new THREE.Group();
+
+      //////////////////////////////////////////////////////////////////////////////////
+      //Transform and Rotation
+      tetrahed3.position.set(sizeOutLine, sizeOutLine, 0);
+      tetrahed2.position.set(sizeOutLine, 0, sizeOutLine);
+      tetrahed4.position.set(0, sizeOutLine, sizeOutLine);
+
+      sphere1.position.set(sizeTetrahed + sizeOutLine,sizeTetrahed + sizeOutLine,sizeTetrahed + sizeOutLine);
+      sphere2.position.set(-sizeTetrahed, sizeTetrahed + sizeOutLine, -sizeTetrahed);
+      sphere3.position.set(-sizeTetrahed, -sizeTetrahed, sizeTetrahed + sizeOutLine);
+      sphere4.position.set(sizeTetrahed + sizeOutLine, -sizeTetrahed, -sizeTetrahed);
+
+      cylinder.position.set(sizeOutLine / 2, sizeOutLine / 2, sizeTetrahed + sizeOutLine);
+      cylinder.rotation.set(0, 0, -Math.PI / 4);
+
+      cylinder2.position.set(sizeOutLine / 2, sizeOutLine / 2, -sizeTetrahed);
+      cylinder2.rotation.set(0, 0, Math.PI / 4);
+
+      cylinder3.position.set(sizeOutLine / 2, -sizeTetrahed, sizeOutLine / 2);
+      cylinder3.rotation.set(Math.PI / 2, 0, Math.PI / 4);
+
+      cylinder4.position.set(sizeTetrahed + sizeOutLine, sizeOutLine / 2, sizeOutLine / 2);
+      cylinder4.rotation.set(Math.PI / 4, 0, 0);
+
+      cylinder5.position.set(sizeOutLine / 2, sizeTetrahed + sizeOutLine, sizeOutLine / 2);
+      cylinder5.rotation.set(Math.PI / 2, 0, -Math.PI / 4);
+
+      cylinder6.position.set(-sizeTetrahed, sizeOutLine / 2, sizeOutLine / 2);
+      cylinder6.rotation.set(-Math.PI / 4, 0, 0);
+
+      //////////////////////////////////////////////////////////////////////////////////
+      //Visualization
+      group.add(
+        tetrahed,
+        tetrahed2,
+        tetrahed3,
+        tetrahed4,
+        sphere1,
+        sphere2,
+        sphere4,
+        sphere3,
+        cylinder,
+        cylinder2,
+        cylinder3,
+        cylinder5,
+        cylinder4,
+        cylinder6
+      );
+      VAX.scene.add(group);
+
+      function animate(t) {
+        group.rotation.set(t / 3, t / 4, t / 5);
+      }
+    </script>
+  </body>
+</html>

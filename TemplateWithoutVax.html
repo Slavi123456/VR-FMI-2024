@@ -45,14 +45,14 @@
 
 			// Създаваме, позиционираме и добавяме
 			// към сцената точков светлинен източник
-			var light = new THREE.PointLight('white', 1);
-			light.position.set(0, 20, 40);
+			var light = new THREE.PointLight('white', 500);
+			light.position.set(0, 20, 30);
 
 			scene.add(light);
 
 			// Създаваме куб и го добавяме към сцената
 			var geometry = new THREE.BoxGeometry(1, 1, 1),
-			material = new THREE.MeshLambertMaterial({ color: 0x00ff00 }),
+			material = new THREE.MeshLambertMaterial({ color: 'red' }),
 			cube = new THREE.Mesh(geometry, material);
 
 			scene.add(cube);
