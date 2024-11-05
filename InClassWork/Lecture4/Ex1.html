@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>S0401: Ръбовете на куб</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+        <script type="module">
+            import * as THREE from 'three';
+            import * as VAX from 'vax';
+                    
+
+
+// Initialize scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create a cube
+const cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
+const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+scene.add(cube);
+
+// Create a sphere
+const sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+scene.add(sphere);
+
+camera.position.z = 10;
+
+// Define edges based on cube vertices
+const edges = [
+    [new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, -1, -1)],   // Edge along x-axis (bottom front)
+    [new THREE.Vector3(1, -1, -1), new THREE.Vector3(1, 1, -1)],     // Edge along y-axis (front right)
+    [new THREE.Vector3(1, 1, -1), new THREE.Vector3(-1, 1, -1)],     // Edge along x-axis (top front)
+    [new THREE.Vector3(-1, 1, -1), new THREE.Vector3(-1, -1, -1)],   // Edge along y-axis (front left)
+    [new THREE.Vector3(-1, -1, 1), new THREE.Vector3(1, -1, 1)],     // Edge along x-axis (back bottom)
+    [new THREE.Vector3(1, -1, 1), new THREE.Vector3(1, 1, 1)],       // Edge along y-axis (back right)
+    [new THREE.Vector3(1, 1, 1), new THREE.Vector3(-1, 1, 1)],       // Edge along x-axis (back top)
+    [new THREE.Vector3(-1, 1, 1), new THREE.Vector3(-1, -1, 1)],     // Edge along y-axis (back left)
+    [new THREE.Vector3(-1, -1, -1), new THREE.Vector3(-1, -1, 1)],   // Edge along z-axis (left bottom)
+    [new THREE.Vector3(1, -1, -1), new THREE.Vector3(1, -1, 1)],     // Edge along z-axis (right bottom)
+    [new THREE.Vector3(1, 1, -1), new THREE.Vector3(1, 1, 1)],       // Edge along z-axis (right top)
+    [new THREE.Vector3(-1, 1, -1), new THREE.Vector3(-1, 1, 1)]      // Edge along z-axis (left top)
+];
+
+// Initialize movement parameters
+let t = 0;
+let speed = 0.01;
+let currentEdge = getRandomEdge();
+
+// Function to pick a random edge
+function getRandomEdge() {
+    return edges[Math.floor(Math.random() * edges.length)];
+}
+
+// Function to get the position along the current edge
+function getEdgePosition(edge, t) {
+    const start = edge[0].clone();
+    const end = edge[1].clone();
+
+    // Interpolate position along the edge
+    const position = start.lerp(end, t);
+
+    // Apply cube's transformations
+    position.applyMatrix4(cube.matrixWorld);
+
+    return position;
+}
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Rotate the cube
+    cube.rotation.y += 0.01;
+    cube.rotation.x += 0.01;
+
+    // Move sphere along the current edge
+    const edgePosition = getEdgePosition(currentEdge, t);
+    sphere.position.copy(edgePosition);
+
+    // Increment or reset `t` to move along the edge
+    t += speed;
+    if (t >= 1) {
+        t = 0;  // Reset `t` for the next edge
+        currentEdge = getRandomEdge();  // Pick a new random edge
+    }
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+
+		</script>
+	</body>
+</html>
+
+

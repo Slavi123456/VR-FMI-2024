@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			
+            //MathUtils.randFloat.(min, max)  --------- min,max can be negative, float etc.
+            var zCoord = THREE.MathUtils.randFloat(-50,50);
+            var cubeMat = new THREE.Color().setHSL(THREE.MathUtils.randFloat(0,1),1,0.7);
+            
+			///////////////////////////////////////////////////////////////////////////
+            //Light
+            //AmbientLight( color : Integer, intensity : Float )
+            var ambientLight = new THREE.AmbientLight(  0x404040); // soft white light
+			//HemisphereLight( skyColor : Integer, groundColor : Integer, intensity : Float )
+			var hemisphereLight = new THREE.HemisphereLight('yellow', 'red', 10); 
+			//PointLight( color : Integer, intensity : Float, distance : Number, decay : Float )
+			var pointlight = new THREE.PointLight( 0xff0000, 1, 100 );
+
+			///////////////////////////////////////////////////////////////////////////
+			//Materials //for all their properties https://threejs.org/docs/index.html?q=mate#api/en/materials/Material
+			//MeshLambertMaterial( parameters : Object )
+			var lamberMat = new THREE.MeshLambertMaterial({color: 'cornflowerblue'});
+			//MeshPhongMaterial( parameters : Object )
+			var phongMat = new THREE.MeshPhongMaterial({color: 'cornflowerblue',shininess: 500});
+			//MeshPhysicalMaterial( parameters : Object )
+			var physMat = new THREE.MeshPhysicalMaterial({
+						color: 'yellow',
+						emissive: 'lightyellow',
+						emissiveIntensity: 0.5
+					})
+
+			///////////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////////////
+			//these i haven't used still but still good
+
+			//position moving 
+			// on sphere coord
+			VAX.light.position.setFromSphericalCoords(150, 1.2*t+1, 2*Math.sin(t));
+		
+			//Shadow
+			// включваме обработката на сенки
+			VAX.renderer.shadowMap.enabled = true;
+
+			// вдигаме светлината и размера на сянката
+			VAX.light.position.set(0, 200, 0);
+			VAX.light.shadow.mapSize.width = 1024;
+			VAX.light.shadow.mapSize.height = 1024;
+
+			// светлината ще прави сянка, чайникът създава
+			// сянка, а върху земята ще се рисува сянка
+			VAX.light.castShadow = true;
+			teapot.castShadow = true;
+			ground.receiveShadow = true;
+
+					
+			///////////////////////////////////////////////////////////////////////////
+            //Gui		
+			import GUI from '../../dist/lil-gui.esm.js';
+					
+			const gui = new GUI();
+					
+			const folder = gui.addFolder( 'Folder' );
+					
+			const folderParams = {
+				number: 0.5,
+				boolean: false,
+				color: '#0cf',
+				function() { console.log( 'hi' ) }
+			};
+			
+			folder.add( folderParams, 'number', 0, 1 );
+			folder.add( folderParams, 'boolean' );
+			folder.addColor( folderParams, 'color' );
+			folder.add( folderParams, 'function' );
+			
+			const params = {
+				options: 10,
+				boolean: true,
+				string: 'lil-gui',
+				number: 0,
+				color: '#aa00ff',
+				function() { console.log( 'hi' ) }
+			};
+			
+			gui.add( params, 'options', { Small: 1, Medium: 10, Large: 100 } );
+			gui.add( params, 'boolean' );
+			gui.add( params, 'string' );
+			gui.add( params, 'number' );
+			gui.addColor( params, 'color' );
+			gui.add( params, 'function' ).name( 'Custom Name' );
+
+			/////////////////////////////////
+			//In Lecture
+			var data = {
+				k: 0.5,
+				speed: 1,
+				color: VAX.ground.material.color.getHex(),
+				px: -40,
+				pz: 0,
+				qx: 40,
+				qz: 0
+			};
+			
+			gui.add(data, 'speed', {
+				'Стоп': 0,
+				'Бавна': 0.5,
+				'Нормална': 1,
+				'Бърза': 5
+			}).name('Скорост');
+
+			gui.addColor(data, 'color').name('Цвят').onChange(
+				// слухтим за промяна на цвета и когато настъпи,
+				// сменяме цвета; алтернативата е в animate() да
+				// прехвърляме цвета на всеки кадър - излишно е
+				function (value)
+				{
+					VAX.ground.material.color.setHex(value);
+				}
+			);
+			///////////////////////////////////////////////////////////////////////////
+            //Navigation gui
+
+
+		</script>
+	</body>
+</html>

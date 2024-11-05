@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			//VAX.camera.position.set(0,60,0);
+            //VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var material = new THREE.MeshLambertMaterial();
+			var geometry = new THREE.BoxGeometry(20, 30, 80);
+			var brick = new THREE.Mesh(geometry, material);
+
+			VAX.scene.add(brick);
+
+            ///////////////////////////////////////////////////////////////////////////
+            //Anim
+            //Tween animation
+            // създаване на двете анимации
+			var tween1 = new TWEEN.Tween(VAX.object.position).to(q, 1000).delay(500);
+			var tween2 = new TWEEN.Tween(VAX.object.position).to(r, 1000).delay(500);
+
+			// свързване на анимациите една за друга
+			tween1.chain(tween2); // втората почва след първата
+			tween1.easing(TWEEN.Easing.Elastic.Out); //подаваш функция, по която да ти се изпълни
+
+			tween1.start();
+
+			function animate(t)
+			{
+				// актуализиране на обекта
+				TWEEN.update();
+
+                ///////////////////////////////////
+                //Vector movement Anim
+                //where v is vector from subdivision from the begining vec and ending vec devided by n
+                var n =50;
+                if (t>2 && n)
+			    {
+			    		VAX.object.position.add(v); 
+			    		n--;
+			    }
+                
+                ///////////////////////////////////
+                //Linear interpolation Anim
+                // k = [0..1]
+			    var k = 0.5 + 0.5 * Math.sin(t);
+                // moving between vectors p and q, with coefficient k
+                VAX.object.position.lerpVectors(p, q, k);
+			}
+			///////////////////////////////////////////////////////////////////////////
+		</script>
+	</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			VAX.camera.position.set(0,60,260);
+            VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var material = new THREE.MeshLambertMaterial();
+            
+            //////////////////////////////////////////////////////////////////////////////////
+            //One Fence
+            var sizeSquere = 8;
+			var boxGeom1 = new THREE.BoxGeometry(sizeSquere, sizeSquere, 3);
+            var sizeBox2 = Math.sqrt(8*8 + 8*8);
+			var boxGeom2 = new THREE.BoxGeometry(sizeBox2, 30, 3);
+			
+            var groupFence = new THREE.Group();
+
+            var brick1 = new THREE.Mesh(boxGeom1, material);
+            brick1.rotation.set(0,0,Math.PI/4);
+            brick1.position.set(0,15,0);
+			var brick2 = new THREE.Mesh(boxGeom2, material);
+
+            groupFence.add(brick1,brick2);
+			
+            //////////////////////////////////////////////////////////////////////////////////
+            //Wall Of Fences
+
+            var wallOneSideGroup = new THREE.Group();
+            wallOneSideGroup.add(groupFence);
+
+            for(let i=1;i < 12; i++) {
+                var group = new THREE.Group();
+                group = groupFence.clone();
+                group.position.set(i *13, 0,0);
+                wallOneSideGroup.add(group);
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////
+            //holding structure
+            var boxLength = 10 * 13 + Math.floor(sizeBox2);
+            var boxGeom1 = new THREE.BoxGeometry(boxLength, 6, 3);
+            var holding1 = new THREE.Mesh(boxGeom1, material);
+            var holding2 = new THREE.Mesh(boxGeom1, material);
+            holding1.position.set(boxLength/2, 7, -3);
+            holding2.position.set(boxLength/2, -7, -3);
+
+            wallOneSideGroup.add(holding1);
+            wallOneSideGroup.add(holding2);
+
+            var distance = 11*13 + 12;
+            wallOneSideGroup.position.set(-boxLength/2,0,distance/2);
+            //////////////////////////////////////////////////////////////////////////////////
+            //whole squere fence
+            var groupOneSide = new THREE.Group();
+            groupOneSide.add(wallOneSideGroup);
+
+            var wholeFence = new THREE.Group();
+            wholeFence.add(groupOneSide);
+            for(let i=1;i < 4; i++) {
+                var group = new THREE.Group();
+                group = groupOneSide.clone();
+                group.rotation.set(0, Math.PI/2 * i,0);
+                wholeFence.add(group);
+            }
+            //////////////////////////////////////////////////////////////////////////////////
+            //visualizing
+            VAX.scene.add(wholeFence);
+
+			function animate(t)
+			{
+				wholeFence.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

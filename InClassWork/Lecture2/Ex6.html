@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			VAX.camera.position.set(0,60,50);
+            VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var material = new THREE.MeshLambertMaterial();
+			
+            var heightGlass = 20;
+            var baseRadGlass = 10;
+            var thicknessGlass = 2;
+
+            var sizeHandle = thicknessGlass /3 *2;
+            var heightHandle = heightGlass /5 * 2;
+
+            //CylinderGeometry(radiusTop,radiusBottom,height :Float,radialSegments, heightSegments :Integer,openEnded :Boolean, thetaStart,thetaLength : Float)
+            var cylinderGeom1 = new THREE.CylinderGeometry(thicknessGlass, thicknessGlass,heightGlass);
+            var cylinderGeom2 = new THREE.CylinderGeometry(baseRadGlass, baseRadGlass,2*thicknessGlass );
+            //SphereGeometry(radius : Float, widthSegments,heightSegments : Integer, phiStart,phiLength,thetaStart,thetaLength : Float)
+            var sphereGeom = new THREE.SphereGeometry( thicknessGlass);
+            //TorusGeometry(radius, tube : Float, radialSegments,tubularSegments : Integer, arc : Float)
+            var torusGeom = new THREE.TorusGeometry( heightHandle, sizeHandle);
+            
+            var torus = new THREE.Mesh(torusGeom, material);
+            torus.scale.set(1,0.5,1);
+            torus.rotation.set(0,0,Math.PI/2);
+            torus.position.set(baseRadGlass+thicknessGlass+ sizeHandle,heightGlass/2,0);
+            
+            var cyl1 = new THREE.Mesh(cylinderGeom1, material);
+            cyl1.position.set(baseRadGlass, heightGlass/2, 0);
+            var cyl2 = new THREE.Mesh(cylinderGeom2, material);
+
+            var sphere1 = new THREE.Mesh(sphereGeom,material);
+            var sphere2 = new THREE.Mesh(sphereGeom,material);
+            sphere1.position.set(baseRadGlass,0,0);
+            sphere2.position.set(baseRadGlass, heightGlass,0);
+            
+            var groupWall = new THREE.Group();
+            var groupWholeGlass = new THREE.Group();
+            
+            groupWall.add(cyl1, sphere1, sphere2);
+            
+            var arrGroups =[];
+            for (let i = 1; i <= 360; i++) {
+                var group = new THREE.Group();
+                group = groupWall.clone();
+                group.rotation.set(0,i, 0);
+                arrGroups.push(group);
+            }
+            for (let i = 0; i <= arrGroups.length; i++) {
+                groupWholeGlass.add(arrGroups[i]);
+            }
+
+			groupWholeGlass.add(cyl2,groupWall,torus);
+            VAX.scene.add(groupWholeGlass );
+
+			function animate(t)
+			{
+				//groupWholeGlass.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0408: Движение по траектория</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+
+			VAX.initScene(animate);
+			
+			// крива - собствен клас, наследник на THREE.Curve
+			class CustomCurve extends THREE.Curve
+			{
+				getPoint(t)
+				{
+					var alpha = 2*Math.PI*t;
+					var radius = 60 + 12*Math.sin(2*alpha);
+					var p = new THREE.Vector3().setFromSphericalCoords(radius, Math.PI/2, alpha);
+					p.y = 30 + 20*Math.sin(alpha + Math.PI/4);
+
+					return p;
+				};
+			}
+
+			// траектория
+			var path = new CustomCurve();
+
+			function animate(t)
+			{
+				// движение по траекторията
+				VAX.object.position.copy(path.getPoint(t/4));
+
+			}
+			
+		</script>
+	</body>
+</html>
+
+

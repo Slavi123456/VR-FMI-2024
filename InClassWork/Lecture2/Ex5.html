@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			
+			var material = new THREE.MeshLambertMaterial();
+			
+            var torusRad = 10;
+            var torusTubeRad = 3;
+            var torusPos = torusRad + torusTubeRad;
+            //TorusGeometry(radius, tube : Float, radialSegments,tubularSegments : Integer, arc : Float)
+            var halfTorusGeom = new THREE.TorusGeometry( torusRad, torusTubeRad, 16, 100,Math.PI );
+                        
+            var leftTorus = new THREE.Mesh(halfTorusGeom, material);
+            leftTorus.position.set(-torusPos,0,0);
+            leftTorus.rotation.set(0,0,Math.PI/2);
+            var rightTorus = new THREE.Mesh(halfTorusGeom, material);
+            rightTorus.position.set(torusPos,0,0);
+            rightTorus.rotation.set(0,0,-Math.PI/2);
+            
+            var cylrad = torusTubeRad;
+            var cylYpos = torusRad;
+            //CylinderGeometry(radiusTop,radiusBottom,height :Float,radialSegments, heightSegments :Integer,openEnded :Boolean, thetaStart,thetaLength : Float)
+            var cylinderGeom1 = new THREE.CylinderGeometry(cylrad, cylrad, torusPos * 2, 32 );
+            var cylinderGeom2 = new THREE.CylinderGeometry(cylrad, cylrad, torusPos + 1, 32 );
+            var cylinderGeom3 = new THREE.CylinderGeometry(cylrad, cylrad, cylrad, 32 );
+
+            var cyl1 = new THREE.Mesh(cylinderGeom1, material);
+            cyl1.position.set(0,cylYpos,0);
+            cyl1.rotation.set(0,0,Math.PI/2);
+            var cyl2 = new THREE.Mesh(cylinderGeom2, material);
+            cyl2.position.set(-torusPos+7,-cylYpos,0);
+            cyl2.rotation.set(0,0,Math.PI/2);
+            var cyl3 = new THREE.Mesh(cylinderGeom3, material);
+            cyl3.position.set(torusPos - 1.5,-cylYpos,0);
+            cyl3.rotation.set(0,0,Math.PI/2);
+
+            var group = new THREE.Group();
+            group.add(leftTorus,rightTorus,cyl1,cyl2,cyl3);
+			
+            VAX.scene.add(group);
+
+			function animate(t)
+			{
+				group.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+            VAX.scene.background = new THREE.Color('black');
+            //VAX.camera.position.set(0,60,0);
+            //VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+            var material = new THREE.MeshPhongMaterial({color: 'indigo'});
+			var material2 = new THREE.MeshPhongMaterial(
+                {
+                    transparent: true, 
+                    opacity: 0.1,
+                }
+            );
+
+			var materialMini = new THREE.MeshPhongMaterial({color: 'dimgray'});
+			var geometry = new THREE.BoxGeometry(20, 20, 20);
+			var smallBox = new THREE.BoxGeometry(15, 15, 15);
+			var geometryPlat = new THREE.BoxGeometry(50, 4, 50);
+			
+            var small = new THREE.Mesh(smallBox, materialMini);
+			var brick = new THREE.Mesh(geometry, material2);
+            var platform = new THREE.Mesh(geometryPlat, material);
+            
+            platform.position.set(0,-25,0);
+
+            //PointLight( color : Integer, intensity : Float, distance : Number, decay : Float )
+			var pointlightWhite1 = new THREE.PointLight( "white", 1000, 100 );
+			var pointlightWhite2 = new THREE.PointLight( "white", 1000, 100 );
+			var pointlightRed1 = new THREE.PointLight( 'red', 1000, 100 );
+			var pointlightRed2 = new THREE.PointLight( 'red', 1000, 100 );
+			var pointlightBlue1 = new THREE.PointLight( 'blue', 1000, 100 );
+			var pointlightBlue2 = new THREE.PointLight( 'blue', 1000, 100 );
+			var pointlightYellow1 = new THREE.PointLight( 'yellow', 1000, 100 );
+			var pointlightYellow2 = new THREE.PointLight( 'yellow', 1000, 100 );
+			
+            pointlightWhite1 .position.set(10,10,10);
+            pointlightWhite2 .position.set(-10,-10,-10);
+            pointlightRed1 .position.set(10,-10,10);
+            pointlightRed2 .position.set(-10,10,-10);
+            pointlightBlue1.position.set(10,-10,-10);
+            pointlightBlue2.position.set(-10,10,10);
+            pointlightYellow1.position.set(-10,-10,10);
+            pointlightYellow2.position.set(10,10,-10);
+
+            var group = new THREE.Group();
+            group.add(
+                brick,
+                small, 
+                pointlightWhite1,
+                pointlightWhite2,
+                pointlightRed1,
+                pointlightRed2,
+                pointlightBlue1,
+                pointlightBlue2,
+                pointlightYellow1,
+                pointlightYellow2,
+            );
+
+            VAX.scene.add(group);
+            VAX.scene.add(platform);
+
+			function animate(t)
+			{
+				group.rotation.set(Math.sin(t/3),Math.sin(t/4), Math.sin(t/5));
+			}
+		</script>
+	</body>
+</html>

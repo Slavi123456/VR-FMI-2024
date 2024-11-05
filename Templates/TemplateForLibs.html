@@ -22,10 +22,14 @@
 		<script type="module">
 		
 			import * as THREE from "three";
-			import * as VAX from "vax";
-			
+			import * as VAX from "vax"; //using it for basic stuff(scene,camera,light,rendered) //by our lector Pavel Boytchev
+			import * as TWEEN from "three/addons/libs/tween.module.js"; //using it for animations
+            import * as lil from "three/addons/libs/lil-gui.module.min.js"; //using it for interactive menu
+
 			VAX.init(animate);
-			
+			//VAX.camera.position.set(0,60,0);
+            //VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
 			var material = new THREE.MeshLambertMaterial();
 			var geometry = new THREE.BoxGeometry(20, 30, 80);
 			var brick = new THREE.Mesh(geometry, material);

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+            
+            VAX.scene.remove(VAX.light);
+			var light = new THREE.HemisphereLight('yellow', 'red', 3);
+			VAX.scene.add(light);
+			
+            var circleMat = new THREE.MeshPhongMaterial({color: 'orange', transparent: true, opacity: 0.4});
+            var circleMat1 = new THREE.MeshPhongMaterial({color: 'red', transparent: true, opacity: 0.4});
+            var circleMat2 = new THREE.MeshPhongMaterial({color: 'yellow', transparent: true, opacity: 0.4});
+            var circleMat3 = new THREE.MeshPhongMaterial({color: 'orange', transparent: true, opacity: 0.4});
+            //SphereGeometry(radius : Float, widthSegments,heightSegments : Integer, phiStart,phiLength,thetaStart,thetaLength : Float)
+            var sphereGeom = new THREE.SphereGeometry( 50, 8,7); 
+
+            var circle = new THREE.Mesh(sphereGeom,circleMat);
+            var circle1 = new THREE.Mesh(sphereGeom,circleMat1);
+            var circle2 = new THREE.Mesh(sphereGeom,circleMat2);
+            var circle3 = new THREE.Mesh(sphereGeom,circleMat3);
+
+            
+
+            var groupSun = new THREE.Group();
+            groupSun.add(circle,circle1,circle2,circle3);
+            
+            VAX.scene.background = new THREE.Color('black');
+            VAX.scene.add(groupSun);
+            
+            //light
+            VAX.scene.remove(VAX.light);
+			var light = new THREE.HemisphereLight('yellow', 'red', 20);
+            //light.position.set(0,80,0);
+			VAX.scene.add(light);
+
+
+            
+            function animate(t)
+			{
+				//brick.rotation.set(0, t / 4, 0);
+                //circle.scale.set(Math.sin(t),Math.sin(t),Math.sin(t));
+                //circle1.scale.set(Math.sin(t/2),Math.sin(t/2),Math.sin(t/2));
+                //circle2.scale.set(Math.sin(t/3),Math.sin(t/3),Math.sin(t/3));
+                //circle3.scale.set(Math.sin(t/4),Math.sin(t/4),Math.sin(t/4));
+                light.intensity = Math.sin(t) + 2;
+
+
+                circle.rotation.set(t*0.2,t/5,t/4);
+                circle1.rotation.set(-t/2,t/3,-t/4);
+                circle2.rotation.set(1.5 + Math.sin(t),0.5*Math.sin(t),t/4);
+                circle3.rotation.set(1.5 * Math.sin(t),-0.5*Math.sin(t),-t/4);
+			}
+		</script>
+	</body>
+</html>

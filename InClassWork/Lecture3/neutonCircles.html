@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			
+			var material1 = new THREE.MeshLambertMaterial({color: "black"});
+			var material2 = new THREE.MeshLambertMaterial({color: "blue"});
+			var material3 = new THREE.MeshLambertMaterial({color: "red"});
+			var material4 = new THREE.MeshLambertMaterial({color: "yellow"});
+			var material5 = new THREE.MeshLambertMaterial({color: "magenta"});
+			var material6 = new THREE.MeshLambertMaterial({color: "orange"});
+			var material7 = new THREE.MeshLambertMaterial({color: "lime"});
+			var geometry = new THREE.CircleGeometry(10, 32);
+			var circle = new THREE.Mesh(geometry, material1);
+			var circle1 = new THREE.Mesh(geometry, material2);
+			circle1.position.set(20,0,0);
+
+            var group = new THREE.Group();
+            group.add(circle1);
+
+			var wholeGroup = new THREE.Group();
+			wholeGroup.add(group);
+
+			for(let i=0; i < 6; i++) {
+				var newGroup = group.clone();
+				newGroup.rotation.set(0,0,Math.PI/3 * i);
+				wholeGroup.add(newGroup);
+			}
+			
+			wholeGroup.children[1].children[0].material = material3;
+			wholeGroup.children[2].children[0].material = material4;
+			wholeGroup.children[3].children[0].material = material5;
+			wholeGroup.children[4].children[0].material = material6;
+			wholeGroup.children[5].children[0].material = material7;
+
+			wholeGroup.add(circle);
+
+			VAX.scene.add(wholeGroup);
+			
+			function animate(t)
+			{
+				wholeGroup.rotation.set(0, 0,t*20);
+			}
+		</script>
+	</body>
+</html>

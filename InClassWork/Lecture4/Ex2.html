@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0416: Еластична плавност Elastic.Out</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as TWEEN from "three/addons/libs/tween.module.js";
+			import * as VAX from "vax";
+
+			VAX.initScene(animate);
+
+			// координати на една точка на движението
+			var p = new THREE.Vector3(
+					40 + 30 * Math.random(),
+					10 + 50 * Math.random(),
+					40 - 80 * Math.random());
+
+			// координати на друга точка на движението
+			var q = new THREE.Vector3(
+					-40 - 30 * Math.random(),
+					10 + 50 * Math.random(),
+					40 - 80 * Math.random());
+
+			// два пилона
+			VAX.scene.add(new VAX.Pillar(p));
+			VAX.scene.add(new VAX.Pillar(q));
+			VAX.object.position.copy(p);
+
+			// създаване на двете анимации
+			var tween1 = new TWEEN.Tween(VAX.object.position).to(q, 2000).easing(TWEEN.Easing.Bounce.In);
+			var tween2 = new TWEEN.Tween(VAX.object.position).to(p, 2000).easing(TWEEN.Easing.Bounce.In);
+
+			// свързване на двете анимации една за друга
+			tween1.chain(tween2).start();
+			tween2.chain(tween1);
+
+			function animate(t)
+			{
+				// актуализиране на обекта
+				TWEEN.update();
+
+				// въртене на сцената и на обекта
+				VAX.object.rotation.y = -5*t;
+				VAX.scene.rotation.y = t/5;
+			}
+			
+		</script>
+	</body>
+</html>
+
+

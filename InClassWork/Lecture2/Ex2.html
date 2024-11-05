@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+
+            var cylRad = 10;
+            var squereSize = 4*cylRad;
+            var figureWidth = 4;
+
+			var material = new THREE.MeshLambertMaterial();
+			
+            var boxGeom = new THREE.BoxGeometry(squereSize, figureWidth,2*cylRad);
+			var cylGeom = new THREE.CylinderGeometry( cylRad, cylRad, figureWidth, 32 );
+            
+            var group = new THREE.Group();
+            
+            //VAX.camera.position.set(0,60,0);
+            //VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+            var cyl1 = new THREE.Mesh(cylGeom, material);
+            var cyl2 = new THREE.Mesh(cylGeom, material);
+            var cyl3 = new THREE.Mesh(cylGeom, material);
+            var cyl4 = new THREE.Mesh(cylGeom, material);
+            cyl1.position.set(-cylRad,0,cylRad);
+            cyl2.position.set(cylRad,0,cylRad);
+            cyl3.position.set(cylRad,0,-cylRad);
+            cyl4.position.set(-cylRad,0,-cylRad);
+            
+            var brick1 = new THREE.Mesh(boxGeom, material);
+            var brick2 = new THREE.Mesh(boxGeom, material);
+            brick2.rotation.set(0,Math.PI/2,0);
+			
+            group.add(cyl1,cyl2,cyl3,cyl4, brick1,brick2);
+            VAX.scene.add(group);
+
+			function animate(t)
+			{
+				group.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

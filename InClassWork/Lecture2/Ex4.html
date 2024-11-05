@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+
+			var material = new THREE.MeshLambertMaterial();
+            
+			//SphereGeometry(radius : Float, widthSegments,heightSegments : Integer, phiStart,phiLength,thetaStart,thetaLength : Float)
+            var sphereGeomTop = new THREE.SphereGeometry( 5, 32, 16);
+            var sphereGeomMid= new THREE.SphereGeometry( 8, 32, 16);
+            var sphereGeomBase = new THREE.SphereGeometry( 10, 25, 10,0,7,0,1.55);
+            //CylinderGeometry(radiusTop,radiusBottom,height :Float,radialSegments, heightSegments :Integer,openEnded :Boolean, thetaStart,thetaLength : Float)
+            var cylinderGeom = new THREE.CylinderGeometry( 1, 5, 30, 32 );
+            var cylBaseGeom = new THREE.CylinderGeometry( 11, 11, 1, 32 ); 
+ 
+            var cylBase = new THREE.Mesh(cylBaseGeom, material);
+            var sphereTop = new THREE.Mesh(sphereGeomTop,material);
+            var sphereMid = new THREE.Mesh(sphereGeomMid,material);
+            var sphereBase = new THREE.Mesh(sphereGeomBase,material);
+            var cylinder = new THREE.Mesh(cylinderGeom, material);
+
+            cylinder.position.set(0,16,0);
+            sphereTop.position.set(0,33,0);
+            sphereMid.scale.set(1,0.3,1);
+            sphereMid.position.set(0,25,0);
+
+            var group = new THREE.Group();
+            group.add(cylinder,cylBase,sphereBase, sphereMid,  sphereTop);
+            VAX.scene.add(group);
+
+			function animate(t)
+			{
+				group.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

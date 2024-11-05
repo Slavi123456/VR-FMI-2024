@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			
+			var material = new THREE.MeshLambertMaterial();
+			var geometry = new THREE.BoxGeometry(20, 20, 20);
+			var brick = new THREE.Mesh(geometry, material);
+            brick.rotation.set(0,90,0);
+
+			VAX.scene.add(brick);
+            
+            function animate(t) {
+                const angle = t; // Scale t to control rotation speed
+                const val = Math.floor(t /Math.PI * 2) % 3; // Switch every 1000 ms
+                if (val === 0) brick.rotation.set (t,0,0);
+                else if (val === 1) brick.rotation.set(0,t,0);
+                else if (val === 2) brick.rotation.set(0,0,t);
+                //brick.rotation.z = t;
+            }
+		</script>
+	</body>
+</html>

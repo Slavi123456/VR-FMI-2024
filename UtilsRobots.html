@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>E0203: Библиотека vax.js</title>
+        <meta charset="utf-8">
+        
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        
+        <script type="importmap">
+          {
+            "imports": {
+              "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+              "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+              "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+            }
+          }
+        </script>
+    </head>
+    
+    <body>
+        <script type="module">
+        
+            import * as THREE from "three";
+            import * as VAX from "vax";
+            
+            VAX.init(animate);
+            // елемент на робот
+            var robotMaterial = new THREE.MeshPhysicalMaterial({color: 'tomato'});
+
+            // клас за елемент на робот
+            function robotElement(sizeX, sizeY, sizeZ, parent)
+            {
+            var robotGeometry = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+            robotGeometry.translate(0, sizeY/2, 0);
+            
+            var part = new THREE.Mesh(robotGeometry, robotMaterial);
+            
+            // ако има родител, регистрира елемента като негов подобект
+            if (parent)
+            {
+            part.position.set(0, parent.geometry.parameters.height, 0);
+            parent.add(part);
+            }
+
+            return part;
+            }
+
+            // първи елемент на робот
+            var a = robotElement(10, 25, 5);
+            a.position.y = -40;
+            VAX.scene.add(a);
+
+            // втори елемент
+            var b = robotElement(8, 20, 5, a);
+
+            // трети елемент
+            var c = robotElement(7, 17, 4, b);
+
+            // четвърти елемент
+            var d = robotElement(6, 15, 3, c);
+
+            function animate()
+            {
+            var k = 0.1;
+            
+            a.rotation.set(
+            THREE.MathUtils.lerp(a.rotation.x, THREE.MathUtils.degToRad(pose.ax), k),
+            THREE.MathUtils.lerp(a.rotation.y, THREE.MathUtils.degToRad(pose.ay), k),
+            0,
+            'YXZ');
+            b.rotation.x = THREE.MathUtils.lerp(b.rotation.x, THREE.MathUtils.degToRad(pose.bx), k);
+            c.rotation.x = THREE.MathUtils.lerp(c.rotation.x, THREE.MathUtils.degToRad(pose.cx), k);
+            d.rotation.x = THREE.MathUtils.lerp(d.rotation.x, THREE.MathUtils.degToRad(pose.dx), k);
+            }
+        </script>
+    </body>
+</html>

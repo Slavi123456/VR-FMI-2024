@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotating Boo Text with Gradient Color</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+          }
+        }
+      </script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <script type="module">
+        import * as THREE from "three";
+        import { FontLoader } from "https://unpkg.com/three@0.161.0/examples/jsm/loaders/FontLoader.js";
+        import { TextGeometry } from "https://unpkg.com/three@0.161.0/examples/jsm/geometries/TextGeometry.js";
+
+        // Initialize the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Load a font for the text geometry
+        const fontLoader = new FontLoader();
+        fontLoader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+            // Create the "Boo" text geometry
+            const textGeometry = new TextGeometry('Boo', {
+                font: font,
+                size: 1,
+                height: 0.2,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.05,
+                bevelSize: 0.05,
+                bevelOffset: 0,
+                bevelSegments: 5
+            });
+
+            // Create a custom shader material for the gradient effect
+            const gradientMaterial = new THREE.ShaderMaterial({
+                vertexShader: `
+                    varying vec2 vUv;
+
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec2 vUv;
+
+                    void main() {
+                        vec3 color1 = vec3(1.0, 0.647, 0.0); // Orange
+                        vec3 color2 = vec3(0.5, 0.0, 0.5); // Purple
+                        vec3 color = mix(color1, color2, vUv.x);
+                        gl_FragColor = vec4(color, 1.0);
+                    }
+                `,
+                transparent: true
+            });
+
+            // Create the text mesh with the gradient material
+            const textMesh = new THREE.Mesh(textGeometry, gradientMaterial);
+            textMesh.position.set(-1.5, 0, 0); // Center the text
+            scene.add(textMesh);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 2); // Soft white light
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 7.5).normalize();
+            scene.add(directionalLight);
+
+            // Create an array to hold ghost sprites
+            const ghosts = [];
+            const ghostTexture = new THREE.TextureLoader().load('https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@master/color/svg/1F47B.svg'); // Ghost emoji texture
+
+           // Function to spawn ghosts at random positions and sizes
+           function spawnGhost() {
+                const ghostMaterial = new THREE.SpriteMaterial({ map: ghostTexture });
+                const ghostSprite = new THREE.Sprite(ghostMaterial);
+
+                // Randomize size between 0.3 and 0.8
+                const randomSize = Math.random() * 5 + 0.3; // Random size between 0.3 and 0.8
+                ghostSprite.scale.set(randomSize, randomSize, 1); // Set the ghost size
+
+                // Random position on the whole screen relative to camera view
+                const aspectRatio = window.innerWidth / window.innerHeight;
+                ghostSprite.position.x = (Math.random() - 0.5) * aspectRatio * 10; // Random x position
+                ghostSprite.position.y = (Math.random() - 0.5) * 10; // Random y position
+                ghostSprite.position.z = -5; // Keep ghosts at a fixed distance from the camera
+
+                ghosts.push(ghostSprite);
+                scene.add(ghostSprite);
+            }
+
+            // Spawn a ghost every second
+            setInterval(spawnGhost, 1000);
+
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Rotate the text on the Y-axis
+                textMesh.rotation.y += 0.01;
+
+                // Update ghost sprites if needed
+                ghosts.forEach(ghost => {
+                    ghost.rotation.y += 0.01; // Optional: Rotate ghosts as well
+                });
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        });
+
+        // Position the camera
+        camera.position.z = 5;
+    </script>
+</body>
+</html>

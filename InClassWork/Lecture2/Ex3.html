@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+
+			var material = new THREE.MeshLambertMaterial();
+			//SphereGeometry(radius : Float, widthSegments,heightSegments : Integer, phiStart,phiLength,thetaStart,thetaLength : Float)
+            var sphereGeom = new THREE.SphereGeometry( 15, 32, 16 );
+            //CylinderGeometry(radiusTop,radiusBottom,height :Float,radialSegments, heightSegments :Integer,openEnded :Boolean, thetaStart,thetaLength : Float)
+            var cylinderGeom = new THREE.CylinderGeometry( 3, 3, 60, 32 );
+
+            var sphereLeft = new THREE.Mesh(sphereGeom,material);
+            var sphereRight = new THREE.Mesh(sphereGeom,material);
+            var cylinder = new THREE.Mesh(cylinderGeom, material);
+
+            cylinder.rotation.set(0,0,Math.PI/2);
+
+            sphereLeft.scale.set(1,0.5,0.5);
+            sphereRight.scale.set(1,0.5,0.5);
+            sphereRight.position.set(40,0,0);
+            sphereLeft.position.set(-40,0,0);
+
+            var group = new THREE.Group();
+            group.add(cylinder, sphereRight, sphereLeft);
+            
+            //VAX.camera.position.set(0,60,0);
+            //VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+            VAX.scene.add(group);
+
+			function animate(t)
+			{
+				group.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

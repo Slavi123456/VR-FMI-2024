@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			// ---------------------------------------------
+			// Тук е само началото на решението. Може да го
+			// ползвате, ако искате да си спестите писането
+			// на периферен код. Ако силно желаете да имате
+			// опит с Three.js, по-добре започнете начисто.
+			// ---------------------------------------------
+			
+			import * as THREE from "three";
+			import * as VAX from "vax";
+
+			VAX.init(animate);
+
+            var platformSize = 120;
+            // платформа
+			var platform = new THREE.Mesh(
+					new THREE.BoxGeometry(platformSize, 4, platformSize),
+					new THREE.MeshPhongMaterial({
+						color: 'white',
+						shininess: 20
+					})
+			);
+			platform.position.y = -35;
+			VAX.scene.add(platform);
+
+            var sizeCube = 6;
+            var frameSize = 8;
+
+            //BoxGeometry(width,height,depth : Float, widthSegments,heightSegments,depthSegments : Integer)
+            var boxGeom = new THREE.BoxGeometry(sizeCube,sizeCube,sizeCube);
+            var tower = new THREE.Group();
+            var wholeScene = new THREE.Group();
+
+            function buildTower (sceneGroup) {
+                var towerHeight = THREE.MathUtils.randFloat(3,10);
+                
+                var xCoord = THREE.MathUtils.randFloat(-50,50);
+                var zCoord = THREE.MathUtils.randFloat(-50,50);
+
+                for(let i=0; i < towerHeight; i++){
+                    var colorMat = generateColor();          
+                    var rotation = THREE.MathUtils.randFloat(0,Math.PI/2);
+                    var material = new THREE.MeshPhongMaterial({color:colorMat, shininess: 40,transparent: true, opacity:0.3 });
+
+                    var randOffsetX = THREE.MathUtils.randFloat(-2,2);
+                    var randOffsetZ= THREE.MathUtils.randFloat(-2,2);
+                    
+                    var cube = new THREE.Mesh(boxGeom, material);
+                    cube.position.set(xCoord + randOffsetX,i*sizeCube - 30, zCoord + randOffsetZ);
+                    cube.rotation.set(0,rotation, 0);
+                    tower.add(cube);
+                }
+                sceneGroup.add(tower);
+            }
+
+            function buildRuins()
+			{
+
+				for(let i=0; i< 10; i++) {
+                    buildTower(wholeScene);
+                }
+			}
+            buildRuins();
+
+            VAX.scene.add(wholeScene);
+
+			// розов фон
+			VAX.scene.background = new THREE.Color('pink');
+            
+            //AmbientLight( color : Integer, intensity : Float )
+            var ambientLight = new THREE.AmbientLight(  'deeppink', 1); // soft white light
+            ambientLight.position.set(0,0,40);
+            
+            VAX.scene.add(ambientLight);
+
+            //var ambientLight = 
+			function animate(t)
+			{
+				VAX.scene.rotation.set(0, t, 0);
+			}
+
+            function generateColor(){
+                var r = THREE.MathUtils.randFloat(0,1);
+                var g = THREE.MathUtils.randFloat(0,1);
+                var b = THREE.MathUtils.randFloat(0,1);
+                
+                var cubeMat = new THREE.Color().setHSL(r,1,0.7);
+                return cubeMat
+            }
+		</script>
+	</body>
+</html>		
+			
+		

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<!-- Пълна програма за показване на статичен куб -->
+
+<html>
+	<head>
+		<title>E0104: Статичен куб</title>
+		<meta charset="utf-8">
+		<script type="importmap">
+		  {
+            "imports": {
+                "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+                "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+              }
+		  }
+		</script>
+	</head>
+
+
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+            import * as VAX from "vax";
+
+			VAX.init(animate);
+
+            var material = new THREE.MeshLambertMaterial();
+            var cubeGeom = new THREE.BoxGeometry(20,20,20);
+            var cube = new THREE.Mesh(cubeGeom, material);
+
+            VAX.scene.add(cube);
+
+            function animate(t) {
+                cube.rotation.set(Math.sin(t), Math.sin(t), Math.sin(t));
+            }
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+
+			var material = new THREE.MeshLambertMaterial();
+            
+            //////////////////////////////////////////////////////////////////////////////////
+            //One Fence
+
+            //SphereGeometry(radius : Float, widthSegments,heightSegments : Integer, phiStart,phiLength,thetaStart,thetaLength : Float)
+            var sphereGeom = new THREE.SphereGeometry(  5, 32, 16);
+            var sphereGeom2 = new THREE.SphereGeometry(  14, 32, 16);
+			var sphere = new THREE.Mesh(sphereGeom2, material);
+
+            var groupUFO = new THREE.Group();
+            groupUFO.add(sphere);
+           
+            for(let i=1;i < 20; i++) {
+                var newSphere = new THREE.Mesh(sphereGeom, material);
+                newSphere.scale.set(i*0.2,1-Math.sin(i),i*0.2);
+                groupUFO.add(newSphere);
+            }
+
+            
+            //////////////////////////////////////////////////////////////////////////////////
+            //visualizing
+            VAX.scene.add(groupUFO);
+
+			function animate(t)
+			{
+				groupUFO.rotation.set(t / 3, t / 4, t / 5);
+			}
+		</script>
+	</body>
+</html>

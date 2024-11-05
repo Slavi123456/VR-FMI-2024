@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>E0203: Библиотека vax.js</title>
+        <meta charset="utf-8">
+        
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        
+        <script type="importmap">
+          {
+            "imports": {
+              "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+              "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+            }
+          }
+        </script>
+    </head>
+    
+    <body>
+        <script type="module">
+        
+            import * as THREE from "three";
+            //BoxGeometry(width,height,depth : Float, widthSegments,heightSegments,depthSegments : Integer)
+            var boxGeom = new THREE.BoxGeometry(15, 15,15);
+            //CylinderGeometry(radiusTop,radiusBottom,height :Float,radialSegments, heightSegments :Integer,openEnded :Boolean, thetaStart,thetaLength : Float)
+            var cylinderGeom = new THREE.CylinderGeometry(5, 5, 20, 32 );
+            //SphereGeometry(radius : Float, widthSegments,heightSegments : Integer, phiStart,phiLength,thetaStart,thetaLength : Float)
+            var sphereGeom = new THREE.SphereGeometry( 15, 32, 16 );
+            //CircleGeometry(radius : Float, segments : Integer, thetaStart,thetaLength : Float)
+            var circleGeom = new THREE.CircleGeometry( 5, 32 ); 
+            //RingGeometry(innerRadius,outerRadius : Float, thetaSegments,phiSegments : Integer, thetaStart,thetaLength : Float)
+            var ringGeom = new THREE.RingGeometry( 1, 5, 32 );
+            //PlaneGeometry(width : Float, height : Float, widthSegments : Integer, heightSegments : Integer)
+            var planeGeom = new THREE.PlaneGeometry( 1, 1 );
+            //CapsuleGeometry(radius,length : Float, capSegments,radialSegments : Integer)
+            var capsuleGeom = new THREE.CapsuleGeometry( 1, 1, 4, 8 ); 
+            //TetrahedronGeometry(radius : Float, detail : Integer)
+            var tetrahedGeom = new THREE.TetrahedronGeometry(3);
+            //TorusGeometry(radius, tube : Float, radialSegments,tubularSegments : Integer, arc : Float)
+            var torusGeom = new THREE.TorusGeometry( 10, 3, 16, 100 );
+                 
+            ///////////////////////////////////////////////////////////////
+            //VAX
+			//pillar
+			VAX.scene.add( new VAX.Pillar(new THREE.Vector3(
+					-20 - 50 * Math.random(),
+					10 + 50 * Math.random(),
+					40 - 80 * Math.random()) 
+            ));
+            
+
+
+        </script>
+    </body>
+</html>
