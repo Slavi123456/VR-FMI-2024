@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0203: Библиотека vax.js</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+			
+			VAX.init(animate);
+			//VAX.camera.position.set(0,60,0);
+            //VAX.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var material = new THREE.MeshLambertMaterial({color : "#fffffa"});
+			var materialRed = new THREE.MeshLambertMaterial({color: "#e35629"});
+			var materialOrange = new THREE.MeshPhongMaterial({color: "#f4d18f"});
+			var materialGray = new THREE.MeshLambertMaterial({color: "#8f9080"});
+			var materialBlack = new THREE.MeshLambertMaterial({color: "#110c09"});
+			//////////////////////////////////////////////////////////////////
+            //Body
+            var bodyPart1 = new THREE.Mesh(new THREE.BoxGeometry(20, 15, 12), material);
+			var bodyPart2 = new THREE.Mesh(new THREE.BoxGeometry(20, 20, 17), material);
+            bodyPart1.position.set(-5,2,0);
+
+            var bodyGroup = new THREE.Group();
+            bodyGroup.add(bodyPart1,bodyPart2);
+
+            //////////////////////////////////////////////////////////////////
+            //Wing
+            var wingPart1 = new THREE.Mesh(new THREE.BoxGeometry(20, 20, 3), material);
+			var wingPart2 = new THREE.Mesh(new THREE.BoxGeometry(20, 16, 3), material);
+			var wingPart3 = new THREE.Mesh(new THREE.BoxGeometry(22, 20, 2.9), materialGray);
+			var wingPart4 = new THREE.Mesh(new THREE.BoxGeometry(22, 20, 2.8), materialBlack);
+            
+            wingPart2.position.set(-4,0,0);
+            wingPart3.position.set(3,-2,0);
+            wingPart4.position.set(7,-4,0);
+
+            var wingGroup = new THREE.Group();
+            wingGroup.add(wingPart1,wingPart2,wingPart3,wingPart4);
+            //////////////////////////////////////////////////////////////////
+            //Head
+            var headPart1 = new THREE.Mesh(new THREE.BoxGeometry(10, 7, 10), material);
+			var eye1 = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 5), materialBlack);
+			var eye2 = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 5), materialBlack);
+			var beakPart1 = new THREE.Mesh(new THREE.BoxGeometry(15, 2, 5), materialOrange);
+			var beakPart2 = new THREE.Mesh(new THREE.BoxGeometry(15, 2.2, 5), materialOrange);
+            var neck = new THREE.Mesh(new THREE.BoxGeometry(4, 24, 4), material);
+
+            eye1.position.set(-3,0,3);
+            eye2.position.set(-3,0,-3);
+            beakPart1.position.set(-12,-2,0);
+            beakPart2.position.set(-11,-0.8,0);
+            beakPart2.rotation.set(0,0,Math.PI/20);
+            neck.position.set(0,-14,0);
+
+            var headGroup = new THREE.Group();
+            headGroup.add(headPart1,eye1,eye2,beakPart1,beakPart2,neck);
+			
+            //////////////////////////////////////////////////////////////////
+            //Legs
+            var legPart1 = new THREE.Mesh(new THREE.BoxGeometry(3, 20, 3), materialRed);
+            var legPart2 = new THREE.Mesh(new THREE.BoxGeometry(3, 20, 3), materialRed);
+			var legPart3 = new THREE.Mesh(new THREE.BoxGeometry(7, 3, 7), materialRed);
+			var joint = new THREE.Mesh(new THREE.SphereGeometry(3), materialBlack);
+            var joint2 = new THREE.Mesh(new THREE.SphereGeometry(3), materialBlack);
+            
+            legPart1.position.set(0,11,0);
+            legPart2.position.set(0,-11,0);
+            legPart3.position.set(0,-22.5,0);
+            joint2.position.set(0,20,0);
+
+            var legGroup = new THREE.Group();
+            legGroup.add(joint,joint2, legPart1, legPart2,legPart3);
+            //////////////////////////////////////////////////////////////////
+            //Left part and connecting them 
+            var leftLegGroup = new THREE.Group();
+            leftLegGroup = legGroup.clone();
+            leftLegGroup.position.set(0,0,-10);
+
+            var leftWingGroup = new THREE.Group();
+            leftWingGroup = wingGroup.clone();
+            //leftWingGroup.position.set(0,0,-10);
+
+            bodyGroup.position.set(1,30,-5);
+            bodyGroup.rotation.set(0,0,-Math.PI/6);
+
+            wingGroup.position.set(5,30,5);
+            wingGroup.rotation.set(0,0,-Math.PI/6);
+            
+            leftWingGroup.position.set(5,30,-15);
+            leftWingGroup.rotation.set(0,0,-Math.PI/6);
+
+            headGroup.position.set(0,26,0);
+            var animateHead = new THREE.Group();
+            animateHead.add(headGroup);
+            animateHead.position.set(-9,38,-5);
+
+            var wholeStork = new THREE.Group();
+            wholeStork.add(legGroup, leftLegGroup, bodyGroup,wingGroup, leftWingGroup,animateHead);
+            //////////////////////////////////////////////////////////////////
+            //try to make robot animation for leg
+            joint2.add(legPart1);
+            legPart1.position.set(0,-legPart2.geometry.parameters.height/2,0);
+            legPart1.add(joint);
+            joint.position.set(0,-legPart2.geometry.parameters.height/2,0);
+            joint.add(legPart2);
+            legPart2.add(legPart3);
+            legPart3.position.set(0,-legPart2.geometry.parameters.height/2,0);
+            //////////////////////////////////////////////////////////////////
+            //visualize and animate
+            VAX.scene.add(wholeStork);
+
+			function animate(t)
+			{
+                animateHead.rotation.set(0, 0, Math.PI/6 * Math.sin(t)+ Math.PI/6);
+                
+                //legPart1.rotation.set(0,0,Math.PI/60*(Math.sin(t)+1));
+                //legPart1.position.set(Math.sin(t) -1,10,0);
+                joint2.rotation.set(0,0,-Math.PI/4 *  Math.abs(Math.sin(t)));
+                joint.rotation.set(0,0,Math.PI/4 *  Math.abs(Math.sin(t))+ Math.PI/3* Math.abs(Math.sin(t)));
+                
+                
+                // движение на гледната точка
+				VAX.camera.position.setFromSphericalCoords(distance, beta, alpha);
+				VAX.camera.lookAt(new THREE.Vector3(0, 20*distance/150, 0));
+			}
+
+            //////////////////////////////////////////////////////////////////
+            //Mouse nav //copied :D
+            // Ъгли и разстояние на гледната точка
+			var alpha = 0.1;
+			var beta = 1.1;
+			var distance = 150;
+
+			// Прехващане на мишката
+			window.addEventListener('pointerdown', onPointerDown, false);
+			window.addEventListener('pointermove', onPointerMove, false);
+			window.addEventListener('pointerup', onPointerUp, false);
+			window.addEventListener('contextmenu', onContextMenu, false);
+
+			// помощни променливи за работа с мишката
+			var mouseButton = 0; // кой клавиш е натиснат
+			var mouseX = 0; // координати на последна
+			var mouseY = 0; // ...позиция на мишката
+
+			// обработване на натискане на миши бутон
+			function onPointerDown(event)
+			{
+				mouseButton = event.which;
+				mouseX = event.clientX;
+				mouseY = event.clientY;
+			}
+
+			// обработване на пускане на миши бутон
+			function onPointerUp(event)
+			{
+				mouseButton = false;
+			}
+
+			// обработване на местене на мишката
+			function onPointerMove(event)
+			{
+				if (!mouseButton)
+					return; // ако не е натиснат бутон
+
+				// изчисляване колко се е преместила мишката
+				var dX = event.clientX - mouseX;
+				var dY = event.clientY - mouseY;
+
+				// натиснат е ляв бутон
+				if (mouseButton == 1)
+				{
+					alpha = alpha - dX / 100;
+					beta = THREE.MathUtils.clamp(beta-dY/100, 0.1, 1.4);
+				}
+
+				// натиснат е десен бутон
+				if (mouseButton == 3)
+				{
+					distance = THREE.MathUtils.clamp(distance+dY, 50, 300);
+				}
+
+				// запомняме къде е мишката
+				mouseX = event.clientX;
+				mouseY = event.clientY;
+			}
+
+			// обработване на контекстно меню с десен бутон
+			function onContextMenu(event)
+			{
+				//event.preventDefault();
+			}
+
+		</script>
+	</body>
+</html>

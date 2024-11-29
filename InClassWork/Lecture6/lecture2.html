@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0601: Библиотека Physijs</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "physijs": "./physijs/physi.module.js",
+			  "vax": "./vax-physi.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+			import * as THREE from "three";
+			import "physijs";
+			import * as VAX from "vax";
+
+			VAX.init(animate,{physijs: true});
+
+			// топка
+			var geometry = new THREE.SphereGeometry(8);
+			var material = Physijs.createMaterial(new THREE.MeshPhysicalMaterial({color: 'hotpink'}));
+			var ball = new Physijs.SphereMesh(geometry, material);
+			VAX.scene.add(ball);
+
+			function animate()
+			{
+				VAX.scene.simulate();
+			}
+			
+		</script>
+	</body>
+</html>
+
+

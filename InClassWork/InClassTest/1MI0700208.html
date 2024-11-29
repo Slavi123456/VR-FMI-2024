@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Тест №1: Имплементация</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax-test-1.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as lil from "three/addons/libs/lil-gui.module.min.js";
+			import * as VAX from "vax";
+			
+			VAX.pose.randomize = randomize;
+			VAX.pose.solve = solve;
+			VAX.pose.alpha = 60;
+			VAX.pose.beta = 110;
+
+			// интерактивно контролиране на ъглите
+			var gui = new lil.GUI();
+			gui.add(VAX.pose, 'randomize').name('Наново');
+			gui.add(VAX.pose, 'alpha', 0, 180).name('&alpha;').step(0.1).decimals(1).listen();
+			gui.add(VAX.pose, 'beta', -180, 180).name('&beta;').step(0.1).decimals(1).listen();
+			gui.add(VAX.pose, 'solve').name('Реши!');
+
+			function randomize()
+			{
+				VAX.object.position.x = THREE.MathUtils.randFloat(-80, 80);
+				VAX.object.position.y = THREE.MathUtils.randFloat(20, 70);
+
+				solve();
+			}
+
+			randomize();
+
+
+// НЕ ПРОМЕНЯЙТЕ КОДА НАД ТОЗИ КОМЕНТАР
+// ТАКА ВСИЧКИ РЕШЕНИЯ ЩЕ СА СЪИЗМЕРИМИ
+// ПРОМЕНЯЙТЕ САМО ВЪВ ФУНКЦИЯТА SOLVE!
+//
+// основата на робота е в точка (0,0,0)
+// двата сегмента на робота са дълги 40
+//
+// VAX.object			овалният обект, който трябва да се достигне
+// VAX.object.position	позицията в пространството на овалния обект
+// VAX.pose.alpha		ъгъл алфа в градуси (от 0 до 180)
+// VAX.pose.beta		ъгъл бета в градуси (от -180 до 180)
+
+			function solve()
+			{
+				//alert('Тук във функцията solve() сложете своето решение от листа.');
+				//alert('Ако не работи, го направете да работи, доразвивайки идеята си от листа.');
+                var countHookArms = 2;
+                var sizeOneArm = 40;
+                
+				VAX.pose.alpha = 90;
+				VAX.pose.beta = 180;
+
+                var basePointHook = new THREE.Vector3(0,0,0);
+                var vecBaseToObj = new THREE.Vector3().subVectors(basePointHook, VAX.object.position);
+                var distanceToObj = vecBaseToObj.length();
+                var lengthAllHookArms = countHookArms*sizeOneArm;
+
+                if(distanceToObj >= lengthAllHookArms) {
+                    var angleBetHookAndObj = getAngleBetweenVectors(vecBaseToObj, new THREE.Vector3(1,0,0));
+                    alert(angleBetHookAndObj);
+                    VAX.pose.alpha = angleBetHookAndObj;
+                    VAX.pose.beta = 180;
+                }
+                else {
+                    if(distanceToObj <= sizeOneArm){
+                        alert('it cant be reached');
+                    }else {
+                        if (VAX.object.position.x > 0) {
+                            //that means it's on the left side
+                            var objProjectionXaxis = new THREE.Vector3(VAX.object.position.x, 0, 0);
+                            var vecProjectionToObj = new THREE.Vector3().subVectors(objProjectionXaxis, VAX.object.position);
+                            var sizeVecProjecToObj = vecProjectionToObj.length();
+                            var vecBaseToProjection  = new THREE.Vector3().subVectors(objProjectionXaxis, basePointHook);
+
+                            var angleBeta = cosTheroem(sizeOneArm,sizeOneArm, distanceToObj);                            
+                            VAX.pose.alpha = 360 - angleBeta - 90 - getAngleBetweenVectors();
+                            VAX.pose.beta = -180 - (cosTheroem(sizeOneArm, distanceToObj, sizeOneArm) + cosTheroem(distanceToObj,vecBaseToProjection.length(), sizeVecProjecToObj));   
+                        } else if ( VAX.object.position.x < 0) {
+                            //that means it's on the right side
+                            var objProjectionXaxis = new THREE.Vector3(VAX.object.position.x, 0, 0);
+                            var vecProjectionToObj = new THREE.Vector3().subVectors(objProjectionXaxis, VAX.object.position);
+                            var sizeVecProjecToObj = vecProjectionToObj.length();
+                            var vecBaseToProjection  = new THREE.Vector3().subVectors(objProjectionXaxis, basePointHook);
+
+                            var angleBeta = cosTheroem(sizeOneArm,sizeOneArm, distanceToObj);
+                            VAX.pose.beta = 360 - angleBeta;
+                            VAX.pose.alpha = cosTheroem(sizeOneArm, distanceToObj, sizeOneArm) + cosTheroem(distanceToObj,vecBaseToProjection.length(), sizeVecProjecToObj);   
+                        } else {
+                            VAX.pose.alpha = 90;
+                            VAX.pose.beta = 180;   
+                        }
+
+                        //////////////////////////////////////////////////////////////doesn't work
+                        /*var point = new THREE.Vector3(VAX.object.position.x, VAX.object.position.y-sizeOneArm, 0);
+                        var vectorPointToBase =new THREE.Vector3().subVectors(point, basePointHook);
+                        var distancePointBase = vectorPointToBase.length();
+
+                        var angleToRotate = THREE.MathUtils.degToRad(1);
+                        var vecPointToObj = new THREE.Vector3().subVectors(point, VAX.object.position);
+                        var safetyCounter = 0;
+
+                        while(Math.abs(distancePointBase - sizeOneArm) > 0.1){
+                            //rotating the vector around the object position
+                            vecPointToObj.applyAxisAngle(new THREE.Vector3(0, 0, 1), angleToRotate);
+                            
+                            //get the new coordinates of the point
+                            point.copy(VAX.object.position).add(vecPointToObj);
+
+                            //update the distance 
+                            vectorPointToBase.subVectors(point, basePointHook);
+                            distancePointBase = vectorPointToBase.length();
+                            //////////////////////////////////////////////////////////////
+                            safetyCounter++;
+                            // Safety break 
+                            if (safetyCounter > 360) {
+                                alert("Something went wrong");
+                                break;
+                            }
+                        }
+                        VAX.pose.alpha = anglegetAngleBetweenVectors(vectorPointToBase, new THREE.Vector3(1,0,0));
+                        VAX.pose.beta = 360 - anglegetAngleBetweenVectors(vectorPointToBase, vecPointToObj);*/
+                    }
+
+                }
+				
+			}
+			
+            function  getAngleBetweenVectors(vector1, vector2) {
+                    var dotProduct = vector1.dot(vector2);
+
+                    var sizeVec1 = vector1.length();
+                    var sizeVec2 = vector2.length();
+
+                    var angleInRadians = Math.acos(dotProduct / (sizeVec1 * sizeVec2));
+                    var angleInDegrees = angleInRadians * (180 / Math.PI);
+
+                    return angleInDegrees;
+            }
+            function cosTheroem(a, b, c) {
+                // Check for a valid triangle
+                if (a <= 0 || b <= 0 || c <= 0) {
+                    console.warn("Side lengths must be positive.");
+                    return null;
+                }
+                if (a + b <= c || a + c <= b || b + c <= a) {
+                    console.warn("Invalid triangle sides.");
+                    return null;
+                }
+                const cosTheor = (a * a + b * b - c * c) / (2 * a * b);
+            
+                const angleRadians = Math.acos(cosTheta);
+                const angleDegrees = THREE.MathUtils.radToDeg(angleRadians);
+            
+                return angleDegrees;
+            }
+            function rotateVector (vector, rotation) {
+                var euler = new THREE.Euler(rotation, 'XYZ'); 
+
+                var newVec = vector.applyEuler(euler);
+                return newVec;
+            }
+		</script>
+	</body>
+</html>
+
+

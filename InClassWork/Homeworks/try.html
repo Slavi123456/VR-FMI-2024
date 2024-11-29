@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0513: Два елемента</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as lil from "three/addons/libs/lil-gui.module.min.js";
+			import * as VAX from "vax";
+
+			VAX.init(animate);
+
+			VAX.scene.background = new THREE.Color('beige');
+
+			// интерактивно контролиране на ъглите
+			var gui = new lil.GUI();
+			var pose = {
+					ax: 0,
+					ay: 0,
+					bx: 0,
+				};
+			gui.add(pose, 'ay', -360, 360).name('Въртене').step(1);
+			gui.add(pose, 'ax', -90, 90).name('Наклон №1').step(1);
+			gui.add(pose, 'bx', -160, 160).name('Наклон №2').step(1);
+
+			// елемент на робот
+			var robotMaterial = new THREE.MeshPhysicalMaterial({color: 'tomato'});
+
+			// функция за елемент на робот
+			function robotElement(sizeX, sizeY, sizeZ, parent)
+			{
+				var robotGeometry = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+				robotGeometry.translate(0, sizeY/2, 0);
+
+				var part = new THREE.Mesh(robotGeometry, robotMaterial);
+
+				// ако има родител, регистрира елемента като негов подобект
+				if (parent)
+				{
+					part.position.set(0, parent.geometry.parameters.height, 0);
+					parent.add(part);
+				}
+
+				return part;
+			}
+
+			// първи елемент на робот
+			var a = robotElement(10, 25, 5);
+			a.position.y = -40;
+
+            var sphereGeom = new THREE.SphereGeometry( 7, 7, 16 );
+            var sphere = new THREE.Mesh(sphereGeom,robotMaterial);
+            sphere.position.set(0, a.geometry.parameters.height, 0);
+
+            a.add(sphere);
+			VAX.scene.add(a);
+
+			// втори елемент
+			var b = robotElement(8, 20, 5, a);
+
+			function animate(t)
+			{
+				a.rotation.set(
+					Math.PI/6*Math.sin(t)+Math.PI/6,
+					THREE.MathUtils.degToRad(pose.ay),
+					0,
+					'YXZ');
+				b.rotation.set(
+					Math.PI/4*(Math.sin(t)+1),
+					0,
+					0,
+					'YXZ');
+			}
+			
+		</script>
+	</body>
+</html>
+
+
