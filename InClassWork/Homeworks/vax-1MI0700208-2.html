@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "physijs": "./physijs/physi.module.js",
+			  "vax": "./vax-physi.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+
+			import * as THREE from "three";
+			import "physijs";
+			import * as VAX from "vax";
+			import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
+
+			VAX.init(animate);
+
+			VAX.renderer.shadowMap.enabled = true;
+			VAX.light.shadow.mapSize = new THREE.Vector2(1024 * 2, 1024 * 2);
+			VAX.light.position.set(20, 30, 0);
+			VAX.light.castShadow = true;
+
+			/////////////////////////////////////////////////////////////////////
+			var floorGeometry = new THREE.PlaneGeometry(500, 500);
+			var floorMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
+			var floor = new Physijs.BoxMesh(floorGeometry, floorMaterial,0);
+			floor.rotation.x = -Math.PI / 2;
+			floor.position.y =  -2;
+			floor.receiveShadow = true;
+			floor.castShadow = true;
+			
+			/*var canFill =true;
+			function hitTheFloor(otherobject) {
+				console.log(canFill);
+				canFill = false;
+			}
+			floor.addEventListener('collision', hitTheFloor);
+			*/
+
+			VAX.scene.add(floor);
+			
+			/////////////////////////////////////////////////////////////////////
+			var sizeCube = 6;
+			var cubeGeom = new THREE.BoxGeometry(sizeCube,sizeCube,sizeCube);
+            var cubeMat = Physijs.createMaterial(new THREE.MeshPhongMaterial({color: 0x44aa88}),0.4, 0.3);
+            
+			for(var i = 0; i < 30; i++) {
+				if(canFill) createRandomBlock(i);
+				else console.log(i);
+			}
+			function createRandomBlock(count) {
+				var randomFig = Math.round(THREE.MathUtils.randFloat(0, 1));
+    			
+				var tetris = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+				if (randomFig == 1) {
+					//tetris block type 1
+					var cube2 = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+            		cube2.position.set(sizeCube,0,0);
+            		var cube3 = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+            		cube3.position.set(2*sizeCube,0,0);
+            		var cube4 = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+            		cube4.position.set(0,sizeCube,0);
+    			    tetris.add(cube2,cube3,cube4);
+    			} else {
+					//tetris block type 2
+					var cube5 = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+            		cube5.position.set(sizeCube,0,0);
+            		var cube6 = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+            		cube6.position.set(sizeCube,sizeCube,0);
+            		var cube7 = new Physijs.BoxMesh(cubeGeom, cubeMat, 4);
+            		cube7.position.set(0,sizeCube,0);
+    			    tetris.add(cube5,cube6,cube7);
+    			}
+				tetris.position.set(THREE.MathUtils.randFloat(-20, 20), 100+40*i, THREE.MathUtils.randFloat(-20, 20));
+				
+
+				tetris.receiveShadow = true;
+				tetris.castShadow = true;
+				
+				//tetris.scale.set(0.3,0.3,0.3); // that way you scale it visually and not physicly
+
+				VAX.scene.add(tetris);
+			}
+			///////////////////////////////////////////////////////
+
+			var sizeBow = 72;
+			var height = 6;
+			var partsToDevide = sizeBow /3;
+			var bowGeom = new THREE.PlaneGeometry(sizeBow, sizeBow, partsToDevide, partsToDevide);
+
+			var pos = bowGeom.getAttribute('position');
+			var centerX = 0;
+			var centerY = 0;
+
+			var step = sizeBow / partsToDevide; 
+
+			for (var i = 0; i < pos.count; i++) {
+    			var x = pos.getX(i);
+    			var y = pos.getY(i);
+			
+    			var layer = Math.max(
+        			Math.ceil(Math.abs(x - centerX) / step),
+        			Math.ceil(Math.abs(y - centerY) / step)
+    			);
+			
+    			var zValue = layer * height; 
+    			pos.setZ(i, zValue);
+			}
+
+			bowGeom.computeVertexNormals();
+
+			var bowMat = Physijs.createMaterial(new THREE.MeshPhongMaterial({
+						color: 0x806060,
+						roughness: 0,
+						sided: THREE.DoubleSide,
+						transparent: true,
+						opacity: 0.8,
+					}), 1, 0);
+			var bow = new Physijs.HeightfieldMesh(bowGeom, bowMat, 0, partsToDevide, partsToDevide);
+			
+			bow.rotation.x = Math.PI/-2;
+			bow.receiveShadow = true;
+			bow.castShadow = true;
+			
+			VAX.scene.add(bow);
+
+			
+			/////////////////////////////////////////////////////////////////////
+			//копиран код за удобно виждане
+			var alpha = 0.1;
+			var beta = 1.1;
+			var distance = 150;
+
+			// Прехващане на мишката
+			window.addEventListener('pointerdown', onPointerDown, false);
+			window.addEventListener('pointermove', onPointerMove, false);
+			window.addEventListener('pointerup', onPointerUp, false);
+			window.addEventListener('contextmenu', onContextMenu, false);
+
+			// помощни променливи за работа с мишката
+			var mouseButton = 0; // кой клавиш е натиснат
+			var mouseX = 0; // координати на последна
+			var mouseY = 0; // ...позиция на мишката
+
+			// обработване на натискане на миши бутон
+			function onPointerDown(event)
+			{
+				mouseButton = event.which;
+				mouseX = event.clientX;
+				mouseY = event.clientY;
+			}
+		
+			// обработване на пускане на миши бутон
+			function onPointerUp(event)
+			{
+				mouseButton = false;
+			}
+		
+			// обработване на местене на мишката
+			function onPointerMove(event)
+			{
+				if (!mouseButton)
+					return; // ако не е натиснат бутон
+			
+				// изчисляване колко се е преместила мишката
+				var dX = event.clientX - mouseX;
+				var dY = event.clientY - mouseY;
+			
+				// натиснат е ляв бутон
+				if (mouseButton == 1)
+				{
+					alpha = alpha - dX / 100;
+					beta = THREE.MathUtils.clamp(beta-dY/100, 0.1, 1.4);
+				}
+			
+				// натиснат е десен бутон
+				if (mouseButton == 3)
+				{
+					distance = THREE.MathUtils.clamp(distance+dY, 50, 300);
+				}
+			
+				// запомняме къде е мишката
+				mouseX = event.clientX;
+				mouseY = event.clientY;
+			}
+		
+			// обработване на контекстно меню с десен бутон
+			function onContextMenu(event)
+			{
+				//event.preventDefault();
+			}
+			
+			var lastTime = 0;
+			function animate(t)
+			{
+				/*if (t - lastTime >= 2000 && canFill) {
+    			    console.log('Creating a random block');
+    			    createRandomBlock();
+    			    lastTime = t; 
+    			} else {
+    			    console.log('Skipping block creation');
+    			}*/
+		        VAX.scene.simulate(1/50);
+				// движение на гледната точка
+				VAX.camera.position.setFromSphericalCoords(distance, beta, alpha);
+				VAX.camera.lookAt(new THREE.Vector3(0, 20*distance/150, 0));
+			}
+		</script>
+	</body>
+</html>
+
+

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as VAX from "vax";
+            import * as TWEEN from "three/addons/libs/tween.module.js"; //using it for animations
+
+
+			VAX.initAnaglyph(animate);
+			//VAX.init(animate);
+			
+            
+            ////////////////////////////////////////////////////////////////////////////
+            //PlaneGeometry(width : Float, height : Float, widthSegments : Integer, heightSegments : Integer)
+            var planeGeom = new THREE.PlaneGeometry( 100, 100 );
+            var planeMat = new THREE.MeshStandardMaterial({color: '#f5a556'});
+            var plane = new THREE.Mesh(planeGeom, planeMat);
+            plane.rotation.set(-Math.PI/2, 0,0);
+            VAX.scene.add(plane);
+
+            var building =new THREE.Mesh( new THREE.BoxGeometry(15, 20,80),new THREE.MeshStandardMaterial({color: 'gray'}) );
+            building.position.set(-35,10,0);
+            var buildingRoof =new THREE.Mesh( new THREE.BoxGeometry(20, 5,85),new THREE.MeshStandardMaterial({color: 'black'}) );
+            buildingRoof.position.set(-35,20,0);
+            var buildingDoor =new THREE.Mesh( new THREE.BoxGeometry(5, 10,5),new THREE.MeshStandardMaterial({color: 'brown'}) );
+            buildingDoor.position.set(-35,5,40);
+
+            var sndBuilding = building.clone();
+            sndBuilding.position.set(35,15,0);
+            sndBuilding.scale.set(1.5,1.5,0.6);
+            var sndBuildingDoor =new THREE.Mesh( new THREE.BoxGeometry(5, 20,20),new THREE.MeshStandardMaterial({color: 'brown'}) );
+            sndBuildingDoor.position.set(25,10,5);
+
+            var thirdBuilding =new THREE.Mesh( new THREE.BoxGeometry(30, 40,60),new THREE.MeshStandardMaterial({color: 'white'}) );
+            thirdBuilding.position.set(20,20,-35);
+            thirdBuilding.rotation.set(0,Math.PI/2,0);
+            var thirdBuildingWindow =new THREE.Mesh( new THREE.BoxGeometry(30, 20,20),new THREE.MeshStandardMaterial({color: 'aqua'}) );
+            thirdBuildingWindow.position.set(5,25,-34.9);
+            thirdBuildingWindow.rotation.set(0,Math.PI/2,0);
+
+            var thirdBuildingRoof =new THREE.Mesh( new THREE.BoxGeometry(15*Math.sqrt(2), 15*Math.sqrt(2),60),new THREE.MeshStandardMaterial({color: 'white'}) );
+            thirdBuildingRoof.position.set(20,40,-35);
+            thirdBuildingRoof.rotation.set(0,Math.PI/2,Math.PI/4);
+            //thirdBuildingRoof.scale.set(3/4,0.5,1);
+            
+            VAX.scene.add(building);
+            VAX.scene.add(buildingRoof);
+            VAX.scene.add(buildingDoor);
+            VAX.scene.add(sndBuilding);
+            VAX.scene.add(sndBuildingDoor);
+            VAX.scene.add(thirdBuilding);
+            VAX.scene.add(thirdBuildingRoof);
+            VAX.scene.add(thirdBuildingWindow);
+
+            var tirMat = new THREE.MeshStandardMaterial({color: 'red'});
+            var tirMat1 = new THREE.MeshStandardMaterial({color: 'black'});
+
+
+            var tirBlock1 = new THREE.Mesh(new THREE.BoxGeometry(10,20,40), tirMat);
+            var tirBlockFront1 = new THREE.Mesh(new THREE.BoxGeometry(10,14,15), tirMat);
+            tirBlockFront1.position.set(0,-3,35);
+            var tirBlockFront2 = new THREE.Mesh(new THREE.BoxGeometry(8,18,10), tirMat);
+            tirBlockFront2.position.set(0,-2,30);
+
+            var tirBlockBase2 = new THREE.Mesh(new THREE.BoxGeometry(10,3,7), tirMat1);
+            tirBlockBase2.position.set(0,-11.5,40);
+            var tirBlockBase3 = new THREE.Mesh(new THREE.BoxGeometry(11,6,6), tirMat1);
+            tirBlockBase3.position.set(0,-2,40);
+            var tirBlockBase4 = new THREE.Mesh(new THREE.BoxGeometry(7.5,5,55), tirMat1);
+            tirBlockBase4.position.set(0,-11.5,7.5);
+
+            
+            var cylinderGeom = new THREE.CylinderGeometry(3, 3, 3 );
+            var tyre1 = new THREE.Mesh(cylinderGeom, tirMat1);
+            tyre1.position.set(5,-13,33);
+            tyre1.rotation.set(0,0,Math.PI/2);
+            var tyre2 = tyre1.clone();
+            tyre2.position.set(5,-13,10);
+            var tyre3 = tyre1.clone();
+            tyre3.position.set(5,-13,-5);
+            var tyre4 = tyre1.clone();
+            tyre4.position.set(5,-13,-14);
+           
+            var tyreGroup = new THREE.Group();
+            tyreGroup.add(tyre1,tyre2,tyre3,tyre4);
+            
+            var tyreGroup2 = tyreGroup.clone();
+            tyreGroup2.position.set(-10,0,0);
+            
+            var tirGroup = new THREE.Group();
+            tirGroup.add(tirBlock1,
+            tirBlockBase2,
+            tirBlockBase3,
+            tirBlockBase4,
+            tirBlockFront1,
+            tirBlockFront2,
+            tyreGroup,
+            tyreGroup2);
+
+            tirGroup.scale.set(0.5,0.5,0.5);
+            tirGroup.position.set(0,8,0);
+            tirGroup.rotation.set(0,-Math.PI/2,0);
+
+            var tir2 = tirGroup.clone();
+            tir2.position.set(0,8,10);
+            var tir3 = tirGroup.clone();
+            tir3.position.set(0,8,30);
+            
+            VAX.scene.add(tirGroup);
+            VAX.scene.add(tir2);
+            VAX.scene.add(tir3);
+
+            var parkingMat = new THREE.MeshStandardMaterial({color: 'white'});
+            var parkingLine = new THREE.Mesh(new THREE.BoxGeometry(3,3,55), parkingMat);
+            parkingLine.position.set(-22,0,10);
+            var parkingLine2 = new THREE.Mesh(new THREE.BoxGeometry(3,3,50), parkingMat);
+            parkingLine2.position.set(-22,0,10);
+            parkingLine2.rotation.set(-22,0,10);
+            var parkingLine3 = new THREE.Mesh(new THREE.BoxGeometry(3,3,27), parkingMat);
+            parkingLine3.position.set(-10,0,-16);
+            parkingLine3.rotation.set(0,Math.PI/2,0);
+
+            for (let i = 0; i < 6; i++) {
+                var parkingLine4 = parkingLine3.clone();
+                parkingLine4.position.set(-10,0,-16 + i*10.5);
+                VAX.scene.add(parkingLine4);
+            }
+            VAX.scene.add(parkingLine);
+            VAX.scene.add(parkingLine2);
+            VAX.scene.add(parkingLine3);
+            ////////////////////////////////////////////////////////////////////////////
+
+			var alpha = 0.1;
+			var beta = 1.1;
+			var distance = 150;
+
+			VAX.camera.position.setFromSphericalCoords(distance, beta, alpha);
+			VAX.camera.lookAt(new THREE.Vector3(0, 20*distance/150, 0));
+
+            ////////////////////////////////////////////////////////////////////////////
+            var moveToTarget = new TWEEN.Tween(tir3.position)
+            .to({ x: 40, y: 8, z: 30 }, 2000) 
+            .easing(TWEEN.Easing.Quadratic.InOut); 
+            var moveToTarget2 = new TWEEN.Tween(tir3.position)
+            .to({ x: 0, y: 8, z: 30 }, 2000) 
+            .easing(TWEEN.Easing.Quadratic.InOut); 
+            
+            moveToTarget.chain(moveToTarget2);
+            moveToTarget2.chain(moveToTarget);
+
+            moveToTarget.start();
+      function animate(t)
+			{
+                TWEEN.update();
+                VAX.scene.rotation.y = t/5;
+
+			}
+			
+		</script>
+	</body>
+</html>
+
+

@@ -22,6 +22,8 @@
         <script type="module">
         
             import * as THREE from "three";
+            //PlaneGeometry(width : Float, height : Float, widthSegments : Integer, heightSegments : Integer)
+            var planeGeom = new THREE.PlaneGeometry( 1, 1 );
             //BoxGeometry(width,height,depth : Float, widthSegments,heightSegments,depthSegments : Integer)
             var boxGeom = new THREE.BoxGeometry(15, 15,15);
             //CylinderGeometry(radiusTop,radiusBottom,height :Float,radialSegments, heightSegments :Integer,openEnded :Boolean, thetaStart,thetaLength : Float)
@@ -40,7 +42,27 @@
             var tetrahedGeom = new THREE.TetrahedronGeometry(3);
             //TorusGeometry(radius, tube : Float, radialSegments,tubularSegments : Integer, arc : Float)
             var torusGeom = new THREE.TorusGeometry( 10, 3, 16, 100 );
-                 
+            //ConeGeometry(radius, height : Float, radialSegments, heightSegments : Integer, openEnded : Boolean, thetaStart, thetaLength : Float)
+            var coneGeom = new THREE.ConeGeometry( 5, 20, 32 ); 
+            //EdgesGeometry( geometry : BufferGeometry, thresholdAngle : Integer )
+            const geometry = new THREE.BoxGeometry( 100, 100, 100 ); 
+            const edges = new THREE.EdgesGeometry( geometry ); 
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
+            //ConvexGeometry 
+            var height= 20;
+            var size = 20;
+
+			      const points = [
+			          new THREE.Vector3(-size, 0, -size),
+			          new THREE.Vector3(size, 0, -size),
+			          new THREE.Vector3(size, 0, size),
+			          new THREE.Vector3(-size, 0, size),
+			          new THREE.Vector3(0, -height, 0),
+			      ];
+
+			      var convecGeom= new ConvexGeometry(points);
+            var convexMat = new THREE.MeshBasicMaterial( { color: 'hotpink', } );
+            var convexMesh = new THREE.ConvexMesh( convecGeom, convexMat);
             ///////////////////////////////////////////////////////////////
             //VAX
 			//pillar

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<button onclick="requestDeviceOrientation()">Premission</button>
+		<button onclick="getVideo()">Видео</button>
+
+		<script type="module">
+		
+			import * as THREE from "three";
+			import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+			import * as VAX from "vax";
+
+			VAX.init(animate, {antialias:true, alpha:true} );
+			VAX.light.intensity = 6;
+			VAX.light.position.set(0, 0, 0);
+			
+			VAX.camera.fov = 30;
+			VAX.camera.near = 400;
+			VAX.camera.far = 3000;
+			VAX.camera.updateProjectionMatrix();
+			
+			var controls = new OrbitControls(VAX.camera, VAX.renderer.domElement);
+			
+			const envMap = new THREE.CubeTextureLoader().load([
+			  'cubeTexture/posx.jpg', 'cubeTexture/negx.jpg',
+			  'cubeTexture/posy.jpg', 'cubeTexture/negy.jpg',
+			  'cubeTexture/posz.jpg', 'cubeTexture/negz.jpg',
+			]);
+
+			VAX.scene.background = envMap;
+			VAX.scene.background.colorSpace = THREE.LinearSRGBColorSpace;
+
+			const crystalMaterial = new THREE.MeshPhysicalMaterial({
+			  //envMap: reflection,//cubeRenderTarget.texture,
+			  roughness: 0.05,                     
+			  thickness: 30,
+			  //metalness: 0.6,                 
+			  transmission: 1,                  
+			  //ior: 1.5,							
+			  //transparent: true,
+			  opacity:0,                         
+			  //specularIntensity:0.8,
+			  //reflectivity: 1,                 
+			  //refractionRatio: 0.95,            
+			
+			});
+
+			var n = 30;
+			var objects = [];
+			var icoGeometry = new THREE.IcosahedronGeometry(100, 0);;
+				for (var i = 0; i < n; i++)
+				{
+
+					var crystalIco = new THREE.Mesh(icoGeometry, crystalMaterial);
+
+					var r = THREE.MathUtils.randFloat(1000, 2500),
+					a = THREE.MathUtils.randFloat(0, 2*Math.PI),
+					b = THREE.MathUtils.randFloat(Math.PI/4, Math.PI/1.8);
+					crystalIco.position.setFromSphericalCoords(r, b, a);
+
+					objects.push(crystalIco);
+					VAX.scene.add(crystalIco);
+				}
+
+
+			function animate(t) {
+				//controls.update();
+				for (var i = 0; i < n; i++)
+						objects[i].rotation.y = t+i;
+
+			  	crystalIco.rotation.x += 0.01;
+			  	crystalIco.rotation.y += 0.01;
+			}
+			
+			//window.addEventListener("deviceorientation", deviceOrientation, true);
+
+			function getVideo()
+			{
+				navigator.mediaDevices.getUserMedia({video: true}).then(showVideo);
+			}
+
+			function showVideo(stream)
+			{
+				//document.getElementById('video').srcObject = stream;
+			}
+
+			const button = document.getElementById("enable-requestDeviceOrientation");
+
+			button.addEventListener("click", async () => {
+				if (typeof DeviceOrientationEvent.requestPermission === "function") {
+					const permission = await DeviceOrientationEvent.requestPermission();
+					if (permission === "granted") {
+						startDeviceOrientation();
+						button.style.display = "none"; 
+					} else {
+						alert("Permission denied");
+					}
+				} else {
+					startDeviceOrientation();
+					button.style.display = "none"; 
+				}
+			});
+
+			function startDeviceOrientation(event) {
+			    //document.getElementById('acceleration1').innerHTML = xyz(event.acceleration);
+				//document.getElementById('acceleration2').innerHTML = xyz(event.accelerationIncludingGravity);
+				var alpha = event.alpha; 
+			    var beta = event.beta;   
+			    var gamma = event.gamma; 
+			
+			    if (alpha === null || beta === null || gamma === null) {
+			        console.warn("Device orientation not working");
+			        return;
+			    }
+			
+			    alpha = THREE.MathUtils.degToRad(alpha);
+			    beta = THREE.MathUtils.degToRad(beta);
+			    gamma = THREE.MathUtils.degToRad(gamma);
+			
+			    VAX.camera.rotation.set(beta, alpha, gamma, 'YXZ');
+			}
+			
+		</script>	
+	</body>
+</html>
+
+

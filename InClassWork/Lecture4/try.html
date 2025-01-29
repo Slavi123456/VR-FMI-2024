@@ -21,44 +21,60 @@
 	<body>
 		<script type="module">
 		
-			import * as THREE from "three";
+		import * as THREE from "three";
+			import * as TWEEN from "three/addons/libs/tween.module.js";
 			import * as VAX from "vax";
 
 			VAX.initScene(animate);
 			
-			// крива - собствен клас, наследник на THREE.Curve
-			class CustomCurve extends THREE.Curve
-			{
-				getPoint(t)
-				{
-					var alpha = 2*Math.PI*t;//
-					var radius = 60 + 12*Math.sin(2*alpha);
-					var p = new THREE.Vector3().setFromSphericalCoords(radius, Math.PI/2, alpha);
-					p.y = 30 + 20*Math.sin(alpha + Math.PI/4);
+			// координати на една точка на движението
+			var p = new THREE.Vector3(
+					20 + 50 * Math.random(),
+					10 + 50 * Math.random(),
+					40 - 80 * Math.random());
 
-					return p;
-				};
-			}
+			// координати на друга точка на движението
+			var q = new THREE.Vector3(
+					-20 - 50 * Math.random(),
+					10 + 50 * Math.random(),
+					40 - 80 * Math.random());
 
-			// траектория
-			var path = new CustomCurve();
+			// координати на трета точка на движението
+			var r = new THREE.Vector3(
+					-20 - 50 * Math.random(),
+					10 + 50 * Math.random(),
+					40 - 80 * Math.random());
 
-			// пилони
-			VAX.scene.add(new VAX.Pillar(path.getPoint(0/3)));
-			VAX.scene.add(new VAX.Pillar(path.getPoint(1/3)));
-			VAX.scene.add(new VAX.Pillar(path.getPoint(2/3)));
+			// три пилона
+			VAX.scene.add(new VAX.Pillar(p));
+			VAX.scene.add(new VAX.Pillar(q));
+			VAX.scene.add(new VAX.Pillar(r));
+			VAX.object.position.copy(p);
+			
 
-			// рисуване на траектория
-			var geometry = new THREE.TubeGeometry(path, 100, 1, 3, false);
-			var material = new THREE.MeshPhongMaterial({emissive: 0x606070});
-			var mesh = new THREE.Mesh(geometry, material);
-			mesh.castShadow = true;
-			VAX.scene.add(mesh);
+			var z = new THREE.Vector3( 10,10,10);
+      		var x = new THREE.Vector3( -10,10,10);
+      		var y = new THREE.Vector3( -10,-10,10);
+			
+
+			// създаване на трите анимации
+			// създаване на трите анимации
+			var tween1 = new TWEEN.Tween(VAX.object.position).to(z, 1000).delay(500);
+			var tween2 = new TWEEN.Tween(VAX.object.position).to(x, 1000).delay(500);
+			var tween3 = new TWEEN.Tween(VAX.object.position).to(y, 1000).delay(500);
+
+			// свързване на трите анимации една за друга
+			tween1.chain(tween2); // втората почва след първата
+			tween2.chain(tween3); // третата - след втората
+			tween3.chain(tween1); // а първата - след третата
+
+			// юруш на маслините
+			tween1.start();
 
 			function animate(t)
 			{
-				// движение по траекторията
-				VAX.object.position.copy(path.getPoint(t/4));
+				// актуализиране на обекта
+				TWEEN.update();
 
 				// въртене на сцената и на обекта
 				VAX.object.rotation.y = -5*t;

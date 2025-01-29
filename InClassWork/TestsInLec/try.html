@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>E0415: Начална и крайна плавност Cubic.InOut</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+			  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+			  "vax": "https://boytchev.github.io/CourseVAX/lib/vax.js"
+			}
+		  }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+		
+			import * as THREE from "three";
+			import * as TWEEN from "three/addons/libs/tween.module.js";
+			import * as VAX from "vax";
+
+			// Set up basic Three.js scene
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Ground
+const groundGeometry = new THREE.PlaneGeometry(500, 500);
+const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x8c8c8c });
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
+
+// Factory Main Building
+const buildingGeometry = new THREE.BoxGeometry(40, 20, 30);
+const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0xd2691e }); // Brick color
+const mainBuilding = new THREE.Mesh(buildingGeometry, buildingMaterial);
+mainBuilding.position.set(0, 10, 0);
+scene.add(mainBuilding);
+
+// Windows
+const windowGeometry = new THREE.BoxGeometry(4, 4, 0.2);
+const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x87ceeb, emissive: 0x000000 });
+for (let i = -12; i <= 12; i += 8) {
+    for (let j = 3; j <= 17; j += 6) {
+        const window = new THREE.Mesh(windowGeometry, windowMaterial);
+        window.position.set(i, j, 15.1); // Front windows
+        scene.add(window);
+    }
+}
+
+// Chimneys
+const chimneyGeometry = new THREE.CylinderGeometry(2, 2, 15, 32);
+const chimneyMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 }); // Gray
+const chimney1 = new THREE.Mesh(chimneyGeometry, chimneyMaterial);
+chimney1.position.set(-10, 25, -10);
+scene.add(chimney1);
+
+const chimney2 = chimney1.clone();
+chimney2.position.set(-5, 25, -10);
+scene.add(chimney2);
+
+// Silo Tanks
+const siloGeometry = new THREE.CylinderGeometry(5, 5, 20, 32);
+const siloMaterial = new THREE.MeshStandardMaterial({ color: 0xa9a9a9 }); // Metallic
+const silo1 = new THREE.Mesh(siloGeometry, siloMaterial);
+silo1.position.set(20, 10, -15);
+scene.add(silo1);
+
+const silo2 = silo1.clone();
+silo2.position.set(30, 10, -15);
+scene.add(silo2);
+
+// Trucks
+const truckGeometry = new THREE.BoxGeometry(12, 6, 5);
+const truckCabGeometry = new THREE.BoxGeometry(5, 4, 4);
+const truckMaterial = new THREE.MeshStandardMaterial({ color: 0x4682b4 }); // Blue truck
+const truckCabMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White cab
+
+const truck = new THREE.Group();
+const truckBody = new THREE.Mesh(truckGeometry, truckMaterial);
+const truckCab = new THREE.Mesh(truckCabGeometry, truckCabMaterial);
+truckCab.position.set(-6, 1, 0);
+truck.add(truckBody, truckCab);
+truck.position.set(-20, 3, 10);
+scene.add(truck);
+
+const truck2 = truck.clone();
+truck2.position.set(-20, 3, -10);
+scene.add(truck2);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(50, 50, 50);
+scene.add(directionalLight);
+
+// Camera position
+camera.position.set(50, 40, 60);
+camera.lookAt(0, 10, 0);
+
+// Animation Loop
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+animate();
+
+		</script>
+	</body>
+</html>
