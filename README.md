@@ -6,6 +6,7 @@ Learning repository for studying and experimenting with **JavaScript** and the *
 ### 📸 Preview Screenshots
 
 ![Screenshot 2025-05-08 113400](https://github.com/user-attachments/assets/a2c0f05b-f2bc-4712-a50b-4b5ae71504e8)
+
 Exercising Lightning
 
 ---
